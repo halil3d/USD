@@ -534,7 +534,7 @@ def GetFileOwner(path):
             import win32security as w32s
             fs = w32s.GetFileSecurity(path, w32s.OWNER_SECURITY_INFORMATION)
             sdo = fs.GetSecurityDescriptorOwner()
-            name, domain, use = w32.LookupAccountSid(None, sdo)
+            name, domain, use = w32s.LookupAccountSid(None, sdo)
             return "%s\\%s" % (domain, name)
         else:
             import pwd
