@@ -22,6 +22,9 @@
 # KIND, either express or implied. See the Apache License for the specific
 # language governing permissions and limitations under the Apache License.
 #
+
+from __future__ import print_function
+
 import os, sys
 
 import platform
@@ -81,22 +84,28 @@ def _findEditorTools(usdFileName, readOnly):
 
 # this generates a temporary usd file which the user will edit.
 def _generateTemporaryFile(usdcatCmd, usdFileName, readOnly, prefix):
-    fullPrefix = prefix or "tmp"
+    # gets the base name of the USD file opened
+    usdFileNameBasename = os.path.splitext(os.path.basename(usdFileName))[0]
+
+    fullPrefix = prefix or usdFileNameBasename + "_tmp"
     import tempfile
     (usdaFile, usdaFileName) = tempfile.mkstemp(
         prefix=fullPrefix, suffix='.usda', dir=os.getcwd())
+
+    # No need for an open file descriptor, as it locks the file in Windows.
+    os.close(usdaFile)
  
     os.system(usdcatCmd + ' ' + usdFileName + '> ' + usdaFileName)
 
     if readOnly:
-        os.chmod(usdaFileName, 0444)
+        os.chmod(usdaFileName, 0o444)
      
     # Thrown if failed to open temp file Could be caused by 
     # failure to read USD file
     if os.stat(usdaFileName).st_size == 0:
         sys.exit("Error: Failed to open file %s, exiting." % usdFileName)
 
-    return usdaFile, usdaFileName
+    return usdaFileName
 
 # allow the user to edit the temporary file, and return whether or
 # not they made any changes.
@@ -111,12 +120,13 @@ def _editTemporaryFile(editorCmd, usdaFileName):
 
 # attempt to write out our changes to the actual usd file
 def _writeOutChanges(temporaryFileName, permanentFileName):
-    from pxr import Sdf
-    temporaryLayer = Sdf.Layer.FindOrOpen(temporaryFileName)
+    from pxr import Sdf, Tf
 
-    if not temporaryLayer:
-        sys.exit("Error: Failed to open temporary layer %s." \
-                 %temporaryFileName)
+    try:
+        temporaryLayer = Sdf.Layer.FindOrOpen(temporaryFileName)
+    except Tf.ErrorException as err:
+        sys.exit("Error: Failed to open temporary layer %s, and therefore cannot save your edits back to original file %s"
+                 ". An error occurred trying to parse the file: %s" % (temporaryFileName, permanentFileName, str(err)))
 
     # Note that we attempt to overwrite the permanent file's contents
     # rather than explicitly creating a new layer. This avoids aligning
@@ -199,8 +209,8 @@ def main():
     usdcatCmd, editorCmd = _findEditorTools(usdFileName, readOnly)
     
     # generate our temporary file with proper permissions and edit.
-    usdaFile, usdaFileName = _generateTemporaryFile(usdcatCmd, usdFileName,
-                                                    readOnly, prefix)
+    usdaFileName = _generateTemporaryFile(usdcatCmd, usdFileName,
+                                          readOnly, prefix)
     tempFileChanged = _editTemporaryFile(editorCmd, usdaFileName)
     
 
@@ -213,7 +223,8 @@ def main():
                      ". Your edits can be found in %s. " \
                      %(usdFileName, usdaFileName))
 
-    os.close(usdaFile)
+    if readOnly:
+        os.chmod(usdaFileName, 0o644)
     os.remove(usdaFileName)
 
 if __name__ == "__main__":

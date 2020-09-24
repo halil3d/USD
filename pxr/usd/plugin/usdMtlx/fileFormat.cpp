@@ -22,11 +22,12 @@
 // language governing permissions and limitations under the Apache License.
 //
 #include "pxr/pxr.h"
-#include "pxr/usd/usdMtlx/fileFormat.h"
-#include "pxr/usd/usdMtlx/reader.h"
+#include "pxr/usd/plugin/usdMtlx/fileFormat.h"
+#include "pxr/usd/plugin/usdMtlx/reader.h"
 #include "pxr/usd/usd/stage.h"
 #include "pxr/usd/usd/usdaFileFormat.h"
 #include "pxr/base/tf/pathUtils.h"
+#include "pxr/base/trace/trace.h"
 
 #include <MaterialXCore/Document.h>
 #include <MaterialXFormat/XmlIo.h>
@@ -108,16 +109,11 @@ UsdMtlxFileFormat::CanRead(const std::string& filePath) const
 
 bool
 UsdMtlxFileFormat::Read(
-    const SdfLayerBasePtr& layerBase,
+    SdfLayer* layer,
     const std::string& resolvedPath,
     bool metadataOnly) const
 {
     TRACE_FUNCTION();
-
-    SdfLayerHandle layer = TfDynamic_cast<SdfLayerHandle>(layerBase);
-    if (!TF_VERIFY(layer)) {
-        return false;
-    }
 
     auto stage = UsdStage::CreateInMemory();
     if (!_Read(stage,
@@ -133,7 +129,7 @@ UsdMtlxFileFormat::Read(
 
 bool
 UsdMtlxFileFormat::WriteToFile(
-    const SdfLayerBase* layerBase,
+    const SdfLayer& layer,
     const std::string& filePath,
     const std::string& comment,
     const FileFormatArguments& args) const
@@ -143,15 +139,10 @@ UsdMtlxFileFormat::WriteToFile(
 
 bool 
 UsdMtlxFileFormat::ReadFromString(
-    const SdfLayerBasePtr& layerBase,
+    SdfLayer* layer,
     const std::string& str) const
 {
     TRACE_FUNCTION();
-
-    SdfLayerHandle layer = TfDynamic_cast<SdfLayerHandle>(layerBase);
-    if (!TF_VERIFY(layer)) {
-        return false;
-    }
 
     auto stage = UsdStage::CreateInMemory();
     if (!_Read(stage,
@@ -167,12 +158,12 @@ UsdMtlxFileFormat::ReadFromString(
 
 bool 
 UsdMtlxFileFormat::WriteToString(
-    const SdfLayerBase* layerBase,
+    const SdfLayer& layer,
     std::string* str,
     const std::string& comment) const
 {
     return SdfFileFormat::FindById(UsdUsdaFileFormatTokens->Id)->
-        WriteToString(layerBase, str, comment);
+        WriteToString(layer, str, comment);
 }
 
 bool
@@ -183,13 +174,6 @@ UsdMtlxFileFormat::WriteToStream(
 {
     return SdfFileFormat::FindById(UsdUsdaFileFormatTokens->Id)->
         WriteToStream(spec, out, indent);
-}
-
-bool 
-UsdMtlxFileFormat::_IsStreamingLayer(
-    const SdfLayerBase& layer) const
-{
-    return false;
 }
 
 PXR_NAMESPACE_CLOSE_SCOPE

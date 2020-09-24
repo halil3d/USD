@@ -21,13 +21,14 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-#ifndef USDABC_ALEMBICREADER_H
-#define USDABC_ALEMBICREADER_H
+#ifndef PXR_USD_PLUGIN_USD_ABC_ALEMBIC_READER_H
+#define PXR_USD_PLUGIN_USD_ABC_ALEMBIC_READER_H
 
 /// \file usdAbc/alembicReader.h
 
 #include "pxr/pxr.h"
 #include "pxr/usd/sdf/abstractData.h"
+#include "pxr/usd/sdf/fileFormat.h"
 #include "pxr/base/tf/token.h"
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -54,7 +55,8 @@ public:
 
     /// Open a file.  Returns \c true on success;  errors are reported by
     /// \c GetErrors().
-    bool Open(const std::string& filePath);
+    bool Open(const std::string& filePath, 
+              const SdfFileFormat::FileFormatArguments&);
 
     /// Close the file.
     void Close();
@@ -65,32 +67,32 @@ public:
     /// Set a reader flag.
     void SetFlag(const TfToken&, bool set = true);
 
-    /// Test for the existence of a spec at \p id.
-    bool HasSpec(const SdfAbstractDataSpecId& id) const;
+    /// Test for the existence of a spec at \p path.
+    bool HasSpec(const SdfPath& path) const;
 
-    /// Returns the spec type for the spec at \p id.
-    SdfSpecType GetSpecType(const SdfAbstractDataSpecId& id) const;
+    /// Returns the spec type for the spec at \p path.
+    SdfSpecType GetSpecType(const SdfPath& path) const;
 
     /// Test for the existence of and optionally return the value at
-    /// (\p id,\p fieldName).
-    bool HasField(const SdfAbstractDataSpecId& id,
+    /// (\p path,\p fieldName).
+    bool HasField(const SdfPath& path,
                   const TfToken& fieldName,
                   SdfAbstractDataValue* value) const;
 
     /// Test for the existence of and optionally return the value at
-    /// (\p id,\p fieldName).
-    bool HasField(const SdfAbstractDataSpecId& id,
+    /// (\p path,\p fieldName).
+    bool HasField(const SdfPath& path,
                   const TfToken& fieldName,
                   VtValue* value) const;
 
     /// Test for the existence of and optionally return the value of the
-    /// property at \p id at index \p index.
-    bool HasValue(const SdfAbstractDataSpecId& id, Index index,
+    /// property at \p path at index \p index.
+    bool HasValue(const SdfPath& path, Index index,
                   SdfAbstractDataValue* value) const;
 
     /// Test for the existence of and optionally return the value of the
-    /// property at \p id at index \p index.
-    bool HasValue(const SdfAbstractDataSpecId& id, Index index,
+    /// property at \p path at index \p index.
+    bool HasValue(const SdfPath& path, Index index,
                   VtValue* value) const;
 
     /// Visit the specs.
@@ -98,7 +100,7 @@ public:
                     SdfAbstractDataSpecVisitor* visitor) const;
 
     /// List the fields.
-    TfTokenVector List(const SdfAbstractDataSpecId& id) const;
+    TfTokenVector List(const SdfPath& path) const;
 
     /// The type holds a set of Usd times and can return an Alembic index
     /// for each time.
@@ -152,9 +154,9 @@ public:
     /// Returns the sampled times over all properties.
     const std::set<double>& ListAllTimeSamples() const;
 
-    /// Returns the sampled times for the property with id \p id.
+    /// Returns the sampled times for the property at \p path.
     const TimeSamples& 
-    ListTimeSamplesForPath(const SdfAbstractDataSpecId& id) const;
+    ListTimeSamplesForPath(const SdfPath& path) const;
 
 private:
     boost::scoped_ptr<class UsdAbc_AlembicDataReaderImpl> _impl;

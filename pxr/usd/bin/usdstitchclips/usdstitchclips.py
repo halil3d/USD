@@ -22,43 +22,50 @@
 # KIND, either express or implied. See the Apache License for the specific
 # language governing permissions and limitations under the Apache License.
 #
+
+from __future__ import print_function
+
 import argparse, os, sys
 from pxr import UsdUtils, Sdf, Tf 
 
 parser = argparse.ArgumentParser( \
             prog=os.path.basename(sys.argv[0]),
             description='Stitch multiple usd file(s) together '
-                        'into one using value clips. '
-                        'An example call is: '
+                        'into one using value clips.\n'
+                        'An example command is:\n\n'
                         'usdstitchclips --out result.usd --clipPath '
                         '/World/fx/Particles_Splash clip1.usd clip2.usd '
                         '\n\n'
                         'This will produce two files, a result.topology.usd '
-                        'and a result.usd.')
+                        'and a result.usd.',
+            formatter_class=argparse.RawDescriptionHelpFormatter)
 
 parser.add_argument('usdFiles', nargs='+')
 parser.add_argument('-o', '--out', action='store',
-                    help='specify a file to write out to')
+                    help='specify the filename for the top-level result file, which also serves as base-name for the topology file.')
 parser.add_argument('-c', '--clipPath', action='store',
-                    help='''specify a prim path to stitch clip data at. ''')
+                    help='specify a prim path at which to begin stitching clip data.')
 parser.add_argument('-s', '--startTimeCode', action='store',
-                    help='specify a start time')
+                    help='specify the time at which the clips will become active')
 parser.add_argument('-r', '--stride', action='store',
-                    help='specify a stride for template metadata')
+                    help='specify a stride for the numeric component of filenames for template metadata')
 parser.add_argument('-e', '--endTimeCode', action='store',
-                    help='specify an end time')
+                    help='specify the time at which the clips will cease being active')
 parser.add_argument('-t', '--templateMetadata', action='store_true',
                     help='author template clip metadata in the root layer.')
 parser.add_argument('-p', '--templatePath', action='store',
                     help='specify a template asset path to author') 
 parser.add_argument('--clipSet', action='store',
-                    help='specify a clipSet to author clip metadata under.')
+                    help='specify a named clipSet in which to author clip metadata, so that multiple sets of clips can be applied on the same prim.')
 parser.add_argument('--activeOffset', action='store', required=False,
-                    help='specify an active offset')
+                    help='specify an offset for template-based clips, offsetting the frame number of each clip file.')
+parser.add_argument('--interpolateMissingClipValues', action='store_true',
+                    help=('specify whether values for clips without authored '
+                          'samples are interpolated from surrounding clips '
+                          'if no default value is authored in any clip.'))
 # useful for debugging with diffs
 parser.add_argument('-n', '--noComment', action='store_true',
-                    help='''do not write a comment specifying how the
-                         usd file was generated''')
+                    help='do not write a comment specifying how the usd file was generated')
 results = parser.parse_args()
 
 # verify the integrity of the inputs
@@ -67,7 +74,7 @@ assert results.clipPath is not None, "must specify a clip path(--clipPath)"
 assert results.usdFiles is not None, "must specify clip files"
 
 if os.path.isfile(results.out):
-    print "Warning: merging with current result layer"
+    print("Warning: merging with current result layer")
 
 outLayerGenerated = False
 topologyLayerGenerated = False
@@ -117,6 +124,7 @@ try:
                                      results.endTimeCode,
                                      results.stride,
                                      results.activeOffset,
+                                     results.interpolateMissingClipValues,
                                      results.clipSet)
     else:
         if results.templatePath:
@@ -131,6 +139,7 @@ try:
 
         UsdUtils.StitchClips(outLayer, results.usdFiles, results.clipPath, 
                              results.startTimeCode, results.endTimeCode,
+                             results.interpolateMissingClipValues,
                              results.clipSet)
 
 

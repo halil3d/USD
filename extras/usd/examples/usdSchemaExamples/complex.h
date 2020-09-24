@@ -134,7 +134,7 @@ protected:
     ///
     /// \sa UsdSchemaType
     USDSCHEMAEXAMPLES_API
-    virtual UsdSchemaType _GetSchemaType() const;
+    UsdSchemaType _GetSchemaType() const override;
 
 private:
     // needs to invoke _GetStaticTfType.
@@ -146,7 +146,7 @@ private:
 
     // override SchemaBase virtuals.
     USDSCHEMAEXAMPLES_API
-    virtual const TfType &_GetTfType() const;
+    const TfType &_GetTfType() const override;
 
 public:
     // --------------------------------------------------------------------- //
@@ -154,10 +154,11 @@ public:
     // --------------------------------------------------------------------- //
     /// 
     ///
-    /// \n  C++ Type: std::string
-    /// \n  Usd Type: SdfValueTypeNames->String
-    /// \n  Variability: SdfVariabilityVarying
-    /// \n  Fallback Value: somethingComplex
+    /// | ||
+    /// | -- | -- |
+    /// | Declaration | `string complexString = "somethingComplex"` |
+    /// | C++ Type | std::string |
+    /// | \ref Usd_Datatypes "Usd Type" | SdfValueTypeNames->String |
     USDSCHEMAEXAMPLES_API
     UsdAttribute GetComplexStringAttr() const;
 

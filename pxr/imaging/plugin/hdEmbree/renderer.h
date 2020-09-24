@@ -21,8 +21,8 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-#ifndef HDEMBREE_RENDERER_H
-#define HDEMBREE_RENDERER_H
+#ifndef PXR_IMAGING_PLUGIN_HD_EMBREE_RENDERER_H
+#define PXR_IMAGING_PLUGIN_HD_EMBREE_RENDERER_H
 
 #include "pxr/pxr.h"
 
@@ -32,10 +32,11 @@
 
 #include "pxr/base/gf/matrix4d.h"
 
-#include <embree2/rtcore.h>
-#include <embree2/rtcore_ray.h>
+#include <embree3/rtcore.h>
+#include <embree3/rtcore_ray.h>
 
 #include <random>
+#include <atomic>
 
 PXR_NAMESPACE_OPEN_SCOPE
 
@@ -110,6 +111,9 @@ public:
     /// Mark the aov buffers as unconverged.
     void MarkAovBuffersUnconverged();
 
+    /// Get the number of samples completed so far.
+    int GetCompletedSamples() const;
+
 private:
     // Validate the internal consistency of aov bindings provided to
     // SetAovBindings. If the aov bindings are invalid, this will issue
@@ -138,17 +142,17 @@ private:
                    std::default_random_engine &random);
 
     // Compute the color at the given ray hit.
-    GfVec4f _ComputeColor(RTCRay const& rayHit,
+    GfVec4f _ComputeColor(RTCRayHit const& rayHit,
                           std::default_random_engine &random,
                           GfVec4f const& clearColor);
     // Compute the depth at the given ray hit.
-    bool _ComputeDepth(RTCRay const& rayHit, float *depth, bool ndc);
-    // Compute the prim ID at the given ray hit.
-    bool _ComputePrimId(RTCRay const& rayHit, int32_t *primId);
+    bool _ComputeDepth(RTCRayHit const& rayHit, float *depth, bool clip);
+    // Compute the given ID at the given ray hit.
+    bool _ComputeId(RTCRayHit const& rayHit, TfToken const& idType, int32_t *id);
     // Compute the normal at the given ray hit.
-    bool _ComputeNormal(RTCRay const& rayHit, GfVec3f *normal, bool eye);
+    bool _ComputeNormal(RTCRayHit const& rayHit, GfVec3f *normal, bool eye);
     // Compute a primvar at the given ray hit.
-    bool _ComputePrimvar(RTCRay const& rayHit, TfToken const& primvar,
+    bool _ComputePrimvar(RTCRayHit const& rayHit, TfToken const& primvar,
         GfVec3f *value);
 
     // Compute the ambient occlusion term at a given point by firing rays
@@ -194,8 +198,11 @@ private:
     int _ambientOcclusionSamples;
     // Should we enable scene colors?
     bool _enableSceneColors;
+
+    // How many samples have been completed.
+    std::atomic<int> _completedSamples;
 };
 
 PXR_NAMESPACE_CLOSE_SCOPE
 
-#endif // HDEMBREE_RENDERER_H
+#endif // PXR_IMAGING_PLUGIN_HD_EMBREE_RENDERER_H

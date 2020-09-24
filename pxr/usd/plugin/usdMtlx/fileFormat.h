@@ -21,8 +21,8 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-#ifndef USDMTLX_FILEFORMAT_H
-#define USDMTLX_FILEFORMAT_H
+#ifndef PXR_USD_PLUGIN_USD_MTLX_FILE_FORMAT_H
+#define PXR_USD_PLUGIN_USD_MTLX_FILE_FORMAT_H
  
 #include "pxr/pxr.h"
 #include "pxr/usd/sdf/fileFormat.h"
@@ -46,17 +46,17 @@ public:
     // SdfFileFormat overrides
     SdfAbstractDataRefPtr InitData(const FileFormatArguments&) const override;
     bool CanRead(const std::string &file) const override;
-    bool Read(const SdfLayerBasePtr& layerBase,
+    bool Read(SdfLayer* layer,
               const std::string& resolvedPath,
               bool metadataOnly) const override;
-    bool WriteToFile(const SdfLayerBase* layerBase,
+    bool WriteToFile(const SdfLayer& layer,
                      const std::string& filePath,
                      const std::string& comment = std::string(),
                      const FileFormatArguments& args = 
                          FileFormatArguments()) const override;
-    bool ReadFromString(const SdfLayerBasePtr& layerBase,
+    bool ReadFromString(SdfLayer* layer,
                         const std::string& str) const override;
-    bool WriteToString(const SdfLayerBase* layerBase,
+    bool WriteToString(const SdfLayer& layer,
                        std::string* str,
                        const std::string& comment=std::string()) const override;
     bool WriteToStream(const SdfSpecHandle &spec,
@@ -68,12 +68,8 @@ protected:
 
     UsdMtlxFileFormat();
     ~UsdMtlxFileFormat() override;
-
-private:
-    // SdfFileFormat overrides
-    bool _IsStreamingLayer(const SdfLayerBase& layer) const override;
 };
 
 PXR_NAMESPACE_CLOSE_SCOPE
 
-#endif // USDMTLX_FILEFORMAT_H
+#endif // PXR_USD_PLUGIN_USD_MTLX_FILE_FORMAT_H

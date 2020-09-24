@@ -10,9 +10,10 @@ For more details, please visit the web site [here](http://openusd.org).
 Build Status
 ------------
 
-|       | master | dev |
-| ----- | ------ | --- |
-| Linux | [![Build Status](https://travis-ci.org/PixarAnimationStudios/USD.svg?branch=master)](https://travis-ci.org/PixarAnimationStudios/USD) | [![Build Status](https://travis-ci.org/PixarAnimationStudios/USD.svg?branch=dev)](https://travis-ci.org/PixarAnimationStudios/USD) |
+|         |   Linux   |  Windows  |   macOS   |
+|:-------:|:---------:|:---------:|:---------:|
+|   dev   | [![Build Status](https://dev.azure.com/PixarAnimationStudios/USD/_apis/build/status/PixarAnimationStudios.USD?branchName=dev&amp;jobName=Linux)](https://dev.azure.com/PixarAnimationStudios/USD/_build/latest?definitionId=2&branchName=dev) | [![Build Status](https://dev.azure.com/PixarAnimationStudios/USD/_apis/build/status/PixarAnimationStudios.USD?branchName=dev&amp;jobName=Windows)](https://dev.azure.com/PixarAnimationStudios/USD/_build/latest?definitionId=2&branchName=dev) | [![Build Status](https://dev.azure.com/PixarAnimationStudios/USD/_apis/build/status/PixarAnimationStudios.USD?branchName=dev&amp;jobName=macOS)](https://dev.azure.com/PixarAnimationStudios/USD/_build/latest?definitionId=2&branchName=dev) |
+|  release | [![Build Status](https://dev.azure.com/PixarAnimationStudios/USD/_apis/build/status/PixarAnimationStudios.USD?branchName=release&amp;jobName=Linux)](https://dev.azure.com/PixarAnimationStudios/USD/_build/latest?definitionId=2&branchName=release) | [![Build Status](https://dev.azure.com/PixarAnimationStudios/USD/_apis/build/status/PixarAnimationStudios.USD?branchName=release&amp;jobName=Windows)](https://dev.azure.com/PixarAnimationStudios/USD/_build/latest?definitionId=2&branchName=release) | [![Build Status](https://dev.azure.com/PixarAnimationStudios/USD/_apis/build/status/PixarAnimationStudios.USD?branchName=release&amp;jobName=macOS)](https://dev.azure.com/PixarAnimationStudios/USD/_build/latest?definitionId=2&branchName=release) |
 
 Additional Documentation
 ------------------------
@@ -45,35 +46,42 @@ has been done on these platforms.
 Dependencies
 ------------
 
-| Name | Version | Optional |
-| ---- | ------- | :------: |
-| C++ compiler                                                      | GCC 4.8, Clang 3.5, MSVC 14.0(VS 2015), MSVC 14.1(VS 2017) |   |
-| C compiler                                                        | GCC 4.8, Clang 3.5, MSVC 14.0(VS 2015), MSVC 14.1(VS 2017) |   |
-| [CMake](https://cmake.org/documentation/)                         | 2.8.8 (Linux), 3.12 (OS X/Windows)    |   |
-| [Python](https://python.org)                                      | 2.7.5                                  | x |
-| [Boost](https://boost.org)                                        | 1.55 (Linux), 1.61.0 (OS X/Windows VS 2015), 1.65.1 (Windows VS 2017)    |   |
-| [Intel TBB](https://www.threadingbuildingblocks.org/)             | 4.4 Update 6                           |   |
+The following dependencies are required:
+ - C++ compiler
+ - C compiler
+ - [CMake](https://cmake.org/documentation/)
+ - [Boost](https://boost.org)
+ - [Intel TBB](https://www.threadingbuildingblocks.org/)
 
-Additional dependencies are required for the following components. These components
-may be disabled at build-time, for further details see [Advanced Build Configuration](BUILDING.md).
+The following dependencies are optional:
+ - [Python](https://python.org)
+
+See [3rd Party Library and Application Versions](VERSIONS.md) for version information.
+
+Additional dependencies are required for the following components. These 
+components may be disabled at build-time, for further details see
+[Advanced Build Configuration](BUILDING.md).
 
 **Imaging and USD Imaging**
 
-| Name | Version | Optional |
-| ---- | ------- | :------: |
-| [OpenSubdiv](https://github.com/PixarAnimationStudios/OpenSubdiv) | 3.0.5 (Linux/OS X), 3.2.0 (Windows)         |   |
-| [GLEW](http://glew.sourceforge.net/)                              | 2.0.0                                       | x |
-| [OpenEXR](http://www.openexr.com)                                 | 2.2.0                                       |   |
-| [OpenImageIO](https://sites.google.com/site/openimageio/home)     | 1.5.11                                      | x |
-| [OSL (OpenShadingLanguage)](https://github.com/imageworks/OpenShadingLanguage)     | 1.5.12                                      | x |
-| [Ptex](http://ptex.us/)                                           | 2.0.30                                      | x |
+The following dependencies are required:
+ - [OpenSubdiv](https://github.com/PixarAnimationStudios/OpenSubdiv)
+
+The following dependencies are optional:
+
+ - [GLEW](http://glew.sourceforge.net/)
+ - [OpenEXR](http://www.openexr.com)
+ - [OpenImageIO](https://sites.google.com/site/openimageio/home)
+ - [OpenColorIO](http://opencolorio.org/)
+ - [OSL (OpenShadingLanguage)](https://github.com/imageworks/OpenShadingLanguage)
+ - [Ptex](http://ptex.us/)                          
 
 **usdview**
 
-| Name | Version |
-| ---- | ------- |
-| [PySide](http://wiki.qt.io/PySide) or [PySide2](http://wiki.qt.io/PySide2) (experimental) | 1.2.2, 2.0.0~alpha0 |
-| [PyOpenGL](https://pypi.python.org/pypi/PyOpenGL/3.1.0)                                   | 3.1.0 |
+The following dependencies are required:
+
+ - [PySide](http://wiki.qt.io/PySide) or [PySide2](http://wiki.qt.io/PySide2)
+ - [PyOpenGL](https://pypi.python.org/pypi/PyOpenGL/)
 
 Getting and Building the Code
 -----------------------------
@@ -102,7 +110,7 @@ additional documentation for running cmake directly.
 - Optional (Can be ignored by passing `--no-python` as an argument to `build_usd.py`)
     - Python (required for [bindings and tests](BUILDING.md#python)) 
     - PyOpenGL (required for [usdview](BUILDING.md#usd-imaging))
-    - PySide or PySide2 (experimental) (required for [usdview](BUILDING.md#usd-imaging))
+    - PySide or PySide2 (required for [usdview](BUILDING.md#usd-imaging))
 
 #### 2. Download the USD source code
 
@@ -138,13 +146,11 @@ then build and install USD into ```/opt/local/USD```.
 
 ##### Windows:
 
-Launch the "Developer Command Prompt" for your version of Visual Studio and 
-run the script in the opened shell. Make sure to use the 64-bit (x64) command
-prompt and not the 32-bit (x86) command prompt.  (Note if you're trying to
-build with Visual Studio 2017, use the "x86 Native Tools Command Prompt for VS
-2017").
+Launch the "x64 Native Tools Command Prompt" for your version of Visual Studio
+and run the script in the opened shell. Make sure to use the 64-bit (x64) 
+command prompt and not the 32-bit (x86) command prompt.
 
-See https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs for more details.
+See https://docs.microsoft.com/en-us/cpp/build/how-to-enable-a-64-bit-visual-cpp-toolset-on-the-command-line for more details.
 
 For example, the following will download, build, and install USD's dependencies,
 then build and install USD into ```C:\Program Files\USD```.

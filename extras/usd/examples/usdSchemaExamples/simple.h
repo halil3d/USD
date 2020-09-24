@@ -110,7 +110,7 @@ protected:
     ///
     /// \sa UsdSchemaType
     USDSCHEMAEXAMPLES_API
-    virtual UsdSchemaType _GetSchemaType() const;
+    UsdSchemaType _GetSchemaType() const override;
 
 private:
     // needs to invoke _GetStaticTfType.
@@ -122,7 +122,7 @@ private:
 
     // override SchemaBase virtuals.
     USDSCHEMAEXAMPLES_API
-    virtual const TfType &_GetTfType() const;
+    const TfType &_GetTfType() const override;
 
 public:
     // --------------------------------------------------------------------- //
@@ -130,10 +130,11 @@ public:
     // --------------------------------------------------------------------- //
     /// An integer attribute with fallback value of 0.
     ///
-    /// \n  C++ Type: int
-    /// \n  Usd Type: SdfValueTypeNames->Int
-    /// \n  Variability: SdfVariabilityVarying
-    /// \n  Fallback Value: 0
+    /// | ||
+    /// | -- | -- |
+    /// | Declaration | `int intAttr = 0` |
+    /// | C++ Type | int |
+    /// | \ref Usd_Datatypes "Usd Type" | SdfValueTypeNames->Int |
     USDSCHEMAEXAMPLES_API
     UsdAttribute GetIntAttrAttr() const;
 

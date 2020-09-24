@@ -21,16 +21,17 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-#ifndef HDEMBREE_CONTEXT_H
-#define HDEMBREE_CONTEXT_H
+#ifndef PXR_IMAGING_PLUGIN_HD_EMBREE_CONTEXT_H
+#define PXR_IMAGING_PLUGIN_HD_EMBREE_CONTEXT_H
 
 #include "pxr/pxr.h"
 
-#include "pxr/imaging/hdEmbree/sampler.h"
+#include "pxr/imaging/plugin/hdEmbree/sampler.h"
 
 #include "pxr/base/gf/matrix4f.h"
+#include "pxr/base/vt/array.h"
 
-#include <embree2/rtcore.h>
+#include <embree3/rtcore.h>
 
 PXR_NAMESPACE_OPEN_SCOPE
 
@@ -39,7 +40,7 @@ class HdRprim;
 /// \class HdEmbreePrototypeContext
 ///
 /// A small bit of state attached to each bit of prototype geometry in embree,
-/// for the benefit of HdEmbreeRenderPass::_TraceRay.
+/// for the benefit of HdEmbreeRenderer::_TraceRay.
 ///
 struct HdEmbreePrototypeContext
 {
@@ -48,13 +49,15 @@ struct HdEmbreePrototypeContext
     /// A name-indexed map of primvar samplers.
     TfHashMap<TfToken, HdEmbreePrimvarSampler*, TfToken::HashFunctor>
         primvarMap;
+    /// A copy of the primitive params for this rprim.
+    VtIntArray primitiveParams;
 };
 
 ///
 /// \class HdEmbreeInstanceContext
 ///
 /// A small bit of state attached to each bit of instanced geometry in embree,
-/// for the benefit of HdEmbreeRenderPass::_TraceRay.
+/// for the benefit of HdEmbreeRenderer::_TraceRay.
 ///
 struct HdEmbreeInstanceContext
 {
@@ -63,9 +66,11 @@ struct HdEmbreeInstanceContext
     /// The scene the prototype geometry lives in, for passing to
     /// rtcInterpolate.
     RTCScene rootScene;
+    /// The instance id of this instance.
+    int32_t instanceId;
 };
 
 
 PXR_NAMESPACE_CLOSE_SCOPE
 
-#endif // HDEMBREE_CONTEXT_H
+#endif // PXR_IMAGING_PLUGIN_HD_EMBREE_CONTEXT_H
